@@ -25,7 +25,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
-				<!-- Esta es una dependensia transitiva (logback, que tambien puede venir en jpa)d, aca la excluimos porque la implementacion que elegimos de slf4 es log4j, que utiliza log4j2.xml -->
+				<!-- Esta es una dependensia transitiva (logback, que tambien puede venir en jpa)dd, aca la excluimos porque la implementacion que elegimos de slf4 es log4j, que utiliza log4j2.xml -->
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-logging</artifactId>

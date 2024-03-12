@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Qualifier("uno")
@@ -22,6 +23,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
     private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
+
     @Override
     /*
     Este metodo se maneja como una transaccion, si algo falla en la bd vuelve para atras. Quedando la integridad como corresponde
@@ -33,16 +35,39 @@ public class CategoryServiceImpl implements ICategoryService {
     public ResponseEntity<CategoryResponseRest> findAll() {
         CategoryResponseRest response = new CategoryResponseRest();
         try {
-            List<Category> category = categoryRepository.findAll();
-            response.setCategory(category);
-            response.setMetadata("Respuesta Ok","00","Respuesta exitosa");
+            List<Category> categories = categoryRepository.findAll();
+            response.setCategoryList(categories);
+            response.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
         } catch (Exception e) {
-            response.setMetadata("Respuesta nok","-1","Error al consultar");
+            response.setMetadata("Respuesta nok", "-1", "Error al consultar");
             e.getStackTrace();
             logger.error(e.getMessage());
-            return new ResponseEntity<CategoryResponseRest>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<CategoryResponseRest>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<CategoryResponseRest> findById(Long id) {
+        CategoryResponseRest response = new CategoryResponseRest();
+        try {
+            Optional<Category> categoryOptional = categoryRepository.findById(id);
+            Category category = categoryOptional.orElseGet(Category::new);
+            if (categoryOptional.isPresent()){
+                response.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
+                logger.info("Categoria: ", category);
+            }else{
+                response.setMetadata("Respuesta nok", "-1", "Categoria no encontrada");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            response.getCategoryList().add(category);
+        } catch (Exception e) {
+            response.setMetadata("Respuesta nok", "-1", "Error al consultar por id");
+            logger.error(e.getMessage(), e.getStackTrace(), "Error al consultar por el id " +id);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    }
 }
