@@ -3,6 +3,7 @@ package com.vargasjuanj.inventory.service.implementation;
 import com.vargasjuanj.inventory.dao.CategoryRepository;
 import com.vargasjuanj.inventory.model.Category;
 import com.vargasjuanj.inventory.response.CategoryResponseRest;
+import com.vargasjuanj.inventory.service.BaseService;
 import com.vargasjuanj.inventory.service.ICategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,9 @@ import java.util.Optional;
 
 @Service
 @Qualifier("uno")
-public class CategoryServiceImpl implements ICategoryService {
+public class CategoryServiceImpl extends BaseService<Category,CategoryRepository> implements ICategoryService {
 
-    @Autowired
+   @Autowired
     private CategoryRepository categoryRepository;
     private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
@@ -32,7 +33,7 @@ public class CategoryServiceImpl implements ICategoryService {
      */
 
     @Transactional(readOnly = true) // tiene que importarse de spring
-    public ResponseEntity<CategoryResponseRest> findAll() {
+    public ResponseEntity<?> getAll() {
         CategoryResponseRest response = new CategoryResponseRest();
         try {
             List<Category> categories = categoryRepository.findAll();
@@ -49,7 +50,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<CategoryResponseRest> findById(Long id) {
+    public ResponseEntity<?> getOne(Long id) {
         CategoryResponseRest response = new CategoryResponseRest();
         try {
             Optional<Category> categoryOptional = categoryRepository.findById(id);
