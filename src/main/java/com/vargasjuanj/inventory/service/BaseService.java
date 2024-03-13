@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,6 +84,9 @@ public abstract class BaseService<E, R extends JpaRepository<E, Long>> implement
 		try {
 			Optional<E> entityOptional = repository.findById(id);
 			E entity = entityOptional.get();
+			// Utilizar reflexión para acceder y setear el campo id con el metodo setter, porque si usamos field no va a encontrar el campo id al venir en ull y da excepcion
+			Method setIdMethod = entityForm.getClass().getMethod("setId", Long.class);
+			setIdMethod.invoke(entityForm, id);
 			entity = repository.save(entityForm);
 			response.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
 			logger.info("Entity: ", entity);
@@ -102,7 +107,8 @@ public abstract class BaseService<E, R extends JpaRepository<E, Long>> implement
 			}
 			response.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
 			logger.info("id: ", id);
-			return new ResponseEntity<>(!repository.existsById(id), HttpStatus.OK);
+			//!repository.existsById(id)
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			response.setMetadata("Respuesta nok", "-1", "Error al eliminar por id");
 			logger.error("Error al eliminar por el id " +id, e);
