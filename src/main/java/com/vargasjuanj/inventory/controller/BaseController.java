@@ -1,7 +1,6 @@
 package com.vargasjuanj.inventory.controller;
 
 import com.vargasjuanj.inventory.service.IBaseService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

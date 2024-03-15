@@ -2,7 +2,6 @@ package com.vargasjuanj.inventory.controller;
 
 import com.vargasjuanj.inventory.model.Product;
 import com.vargasjuanj.inventory.service.implementation.ProductServiceImpl;
-import com.vargasjuanj.inventory.util.ImagenUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
