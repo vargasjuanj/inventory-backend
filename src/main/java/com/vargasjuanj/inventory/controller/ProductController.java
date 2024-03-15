@@ -28,4 +28,13 @@ public class ProductController extends BaseController<Product, ProductServiceImp
 
        return service.save(new Product(name,price,account), categoryID, picture);
     }
+    @GetMapping("filter/{name}")
+    public ResponseEntity<?> findByNameContainingIgnoreCase(@PathVariable String name){
+        return service.findByNameContainingIgnoreCase(name);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<?> getAll(){
+        return service.getAll();
+    }
 }

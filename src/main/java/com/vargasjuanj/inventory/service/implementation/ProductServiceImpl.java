@@ -11,8 +11,10 @@ import com.vargasjuanj.inventory.util.ImagenUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -37,20 +39,20 @@ public  class ProductServiceImpl extends BaseService<Product, ProductRepository>
 
     @Override
     public ResponseEntity<?> save(Product product, Long categoryID, MultipartFile picture) {
-       Respuesta<Product> respuesta= new Respuesta<>();
+        Respuesta<Product> respuesta = new Respuesta<>();
         try {
             product.setPicture(ImagenUtil.compressZLib(picture.getBytes()));
-            Optional<Category> categoryOptional= categoryRepository.findById(categoryID);
-            if (categoryOptional.isPresent()){
+            Optional<Category> categoryOptional = categoryRepository.findById(categoryID);
+            if (categoryOptional.isPresent()) {
                 product.setCategory(categoryOptional.get());
                 Product entity = repository.save(product);
                 respuesta.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
                 respuesta.getResultados().add(entity);
                 logger.info("Entity: ", entity);
-                return new ResponseEntity<>(respuesta,HttpStatus.OK);
-            }else{
+                return new ResponseEntity<>(respuesta, HttpStatus.OK);
+            } else {
                 respuesta.setMetadata("Respuesta nok", "-1", "Categoria asociada no encontrada, idCategoria: " + categoryID);
-                return new ResponseEntity<>(respuesta,HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception e) {
@@ -60,5 +62,43 @@ public  class ProductServiceImpl extends BaseService<Product, ProductRepository>
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> findByNameContainingIgnoreCase(String name) {
+        Respuesta<Product> respuesta = new Respuesta<>();
+        List<Product> products = this.repository.findByNameContainingIgnoreCase(name);
+        try {
+            products.stream().forEach(p -> p.setPicture(ImagenUtil.decompressZLib(p.getPicture())));
+            respuesta.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
+            respuesta.setResultados(products);
+            logger.info("List: ", products);
+            return new ResponseEntity<>(respuesta, HttpStatus.OK);
+        } catch (Exception e) {
+            respuesta.setMetadata("Respuesta nok", "-1", "Error al guardar ");
+            logger.error("Error al guardar " + products, e);
+            return new ResponseEntity<>(respuesta, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    @Transactional(readOnly = true)
+    @Override
+    public ResponseEntity<?> getAll() {
+        Respuesta<Product> response = new Respuesta<>();
+        try {
+            List<Product> entities = repository.findAll();
+            entities.stream().forEach(e -> e.setPicture(ImagenUtil.decompressZLib(e.getPicture())));
+            response.setResultados(entities);
+            response.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setMetadata("Respuesta nok", "-1", "Error al consultar");
+            logger.error("Error al traer todas las entities", e);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> update(Product product, Long idCategoria, Long id) {
+        return null;
+    }
 }

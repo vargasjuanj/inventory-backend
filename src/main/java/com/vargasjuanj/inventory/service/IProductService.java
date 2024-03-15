@@ -4,6 +4,16 @@ import com.vargasjuanj.inventory.model.Product;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface IProductService {
-    public ResponseEntity<?> save(Product product, Long idCategoria, MultipartFile picture);
+    ResponseEntity<?> save(Product product, Long idCategoria, MultipartFile picture);
+    ResponseEntity<?> findByNameContainingIgnoreCase(String name);
+
+    ResponseEntity<?> getAll();
+
+    ResponseEntity<?> update(Product product, Long idCategoria, Long id);
+
+
+
 }

@@ -15,10 +15,10 @@ public abstract class BaseController<E, S extends IBaseService<E>> {
 	public ResponseEntity<?> getAll(){
 		return service.getAll();
 	}
-	@GetMapping("")
+/*	@GetMapping("")
 	public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value =  "size", defaultValue = "10") int size){
 			return service.getAll(page, size);
-	}
+	}*/
 
 	@GetMapping("/{id}") // Este metodo no puede ser llamada si es sobreescrito, ya que deberia tener parametros distintos
 	public ResponseEntity<?> getOne(@PathVariable Long id) {
