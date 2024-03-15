@@ -37,6 +37,7 @@ public  class ProductServiceImpl extends BaseService<Product, ProductRepository>
         this.categoryRepository = categoryRepository; // se inyecta
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> save(Product product, Long categoryID, MultipartFile picture) {
         Respuesta<Product> respuesta = new Respuesta<>();
@@ -51,7 +52,7 @@ public  class ProductServiceImpl extends BaseService<Product, ProductRepository>
                 logger.info("Entity: ", entity);
                 return new ResponseEntity<>(respuesta, HttpStatus.OK);
             } else {
-                respuesta.setMetadata("Respuesta nok", "-1", "Categoria asociada no encontrada, idCategoria: " + categoryID);
+                respuesta.setMetadata("Respuesta nok", "-1", "Categoria asociada no encontrada, categoryID: " + categoryID);
                 return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
             }
 
@@ -97,8 +98,34 @@ public  class ProductServiceImpl extends BaseService<Product, ProductRepository>
         }
     }
 
+    @Transactional
     @Override
-    public ResponseEntity<?> update(Product product, Long idCategoria, Long id) {
-        return null;
-    }
+    public ResponseEntity<?> update(Product product, Long categoryID, MultipartFile picture, Long id) {
+        Respuesta<Product> respuesta = new Respuesta<>();
+        try {
+            Optional<Category> categoryOptional = categoryRepository.findById(categoryID);
+            if (categoryOptional.isPresent()) {
+                product.setCategory(categoryOptional.get());
+                Optional<Product> productOptional = repository.findById(id);
+                Product entity = new Product();
+                if(productOptional.isPresent()){
+                    entity = productOptional.get();
+                    product.setId(productOptional.get().getId());
+                    product.setPicture(ImagenUtil.compressZLib(picture.getBytes()));
+                    entity = repository.save(product);
+                }
+                respuesta.setMetadata("Respuesta Ok", "00", "Respuesta exitosa");
+                respuesta.getResultados().add(entity);
+                logger.info("Entity: ", entity);
+                return new ResponseEntity<>(respuesta, HttpStatus.OK);
+            } else {
+                respuesta.setMetadata("Respuesta nok", "-1", "Categoria asociada no encontrada, categoryID: " + categoryID);
+                return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
+            }
+
+        } catch (Exception e) {
+            respuesta.setMetadata("Respuesta nok", "-1", "Error al guardar ");
+            logger.error("Error al actualizar " + product, e);
+            return new ResponseEntity<>(respuesta, HttpStatus.INTERNAL_SERVER_ERROR);
+        }    }
 }

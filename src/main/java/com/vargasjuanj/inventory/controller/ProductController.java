@@ -37,4 +37,28 @@ public class ProductController extends BaseController<Product, ProductServiceImp
     public ResponseEntity<?> getAll(){
         return service.getAll();
     }
+
+    /**
+     * update product
+     * @param picture
+     * @param name
+     * @param price
+     * @param account
+     * @param categoryID
+     * @param id
+     * @return
+     */
+    @PutMapping("/{id}/")
+    ResponseEntity<?> update (
+            @RequestParam("picture") MultipartFile picture, // asi envia la foto o archivo
+            // esto es enviado de un form data desde angular
+            @RequestParam("name") String name,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("account") int account,
+            @RequestParam("categoryID") Long categoryID,
+            @PathVariable Long id
+    ) {
+
+        return service.update(new Product(name,price,account), categoryID, picture, id);
+    }
 }
