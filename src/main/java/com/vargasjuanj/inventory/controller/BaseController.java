@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin  (origins = "*", methods = {RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
-public class BaseController<E, S extends IBaseService<E>> {
-	@Autowired	
+public abstract class BaseController<E, S extends IBaseService<E>> {
 	protected S service;
+
+	public BaseController(S service){
+		this.service = service;
+	}
 	@GetMapping("/")
 	public ResponseEntity<?> getAll(){
 		return service.getAll();
@@ -24,7 +27,7 @@ public class BaseController<E, S extends IBaseService<E>> {
 	}
 
 
-	@PostMapping("/")
+	@PostMapping("")
 	public ResponseEntity<?> post(@RequestBody E entidadForm) {
 			return service.save(entidadForm);
 	}

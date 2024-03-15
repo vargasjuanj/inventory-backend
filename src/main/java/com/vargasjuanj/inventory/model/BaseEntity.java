@@ -10,7 +10,6 @@ public abstract class BaseEntity implements Serializable { //Se hereda tmb seria
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	protected Long id;
 
 	public Long getId() {

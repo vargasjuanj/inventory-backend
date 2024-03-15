@@ -1,8 +1,6 @@
 package com.vargasjuanj.inventory.response;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ResponseRest {
     private HashMap<String, String> metadata =  new HashMap<>();

@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 //@Qualifier("uno")
 public class CategoryServiceImpl extends BaseService<Category,CategoryRepository> implements ICategoryService {
 
+  //Primero se inyecta aca el categoryrepo, y luego se pasa a la clase base, al constructor
+    public CategoryServiceImpl(CategoryRepository repository) {
+        super(repository);
+    }
 
     @Override
     public void otroMetodoEspecial() {
